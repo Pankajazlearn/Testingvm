@@ -1,0 +1,1367 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PUBLIC CLOUD 
+HIGH-LEVEL DESIGN
+Deliverable Reference: MD024
+ 
+CONTENTS
+Contents	1
+1.	Definitions	4
+1.1	GENERAL DEFINITIONS	4
+Landing Zone	4
+1.2	AWS DEFINITIONS	4
+Compute	4
+S3 Storage	4
+1.3	AZURE DEFINITIONS	4
+2.	Document management	5
+2.1	VERSION HISTORY	5
+2.2	REVIEWS	5
+2.3	APPROVALS	5
+3.	Project overview	6
+3.1	BACKGROUND	6
+3.2	OBJECTIVES	6
+3.3	HIGH LEVEL DESIGN DECISION POINT MATRIX	6
+3.4	PURPOSE OF SIGN-OFF	7
+4.	Management Summary	8
+4.1	PURPOSE OF DOCUMENT	8
+4.2	SCOPE	8
+4.2.1	In Scope	8
+4.2.2	Out of Scope	8
+4.2.3	Assumptions	8
+4.2.4	Dependencies	8
+4.2.5	Risk	8
+4.2.6	Requirements	9
+5.	Solution Architecture	10
+5.1	AWS	10
+5.2	MICROSOFT AZURE	10
+5.3	CAPACITY PLANNING	11
+5.4	NAMING CONVENTIONS	11
+6.	AWS High-Level Design	13
+6.1	LANDING ZONES	13
+6.2	ACCOUNT MANAGEMENT	13
+6.2.1	AWS Organizations	14
+6.3	ASSET TAGGING	17
+6.4	BILLING	18
+6.5	NETWORKING	19
+6.5.1	VPC	19
+6.5.2	Direct Connect	22
+6.5.3	Backup VPN Connectivity	23
+6.5.4	Outbound Internet Connectivity	23
+6.6	SECURITY	24
+6.6.1	AWS Compliance	24
+6.6.2	Shared Responsibility Model	25
+6.6.3	Identity and Access Management	26
+6.6.4	Security Groups	28
+6.6.5	Network Access Control Lists	29
+6.6.6	Penetration Testing	30
+6.6.7	Data Protection	30
+6.6.8	OS Hardening	32
+6.6.9	Malware Threat Protection	32
+6.6.10	DDOS Protection	32
+6.7	COMPUTE, STORAGE AND BACKUP	33
+6.7.1	Compute	33
+6.7.2	Storage	34
+6.7.3	Operating Systems	35
+6.7.4	Backup	35
+6.8	AWS LOGGING	37
+6.9	AWS MONITORING	38
+7.	Azure High-Level Design	39
+7.1	SUBSCRIPTION MANAGEMENT	39
+7.1.1	Number of Subscriptions	41
+7.1.2	Subscription Directory	42
+7.2	RESOURCE GROUPS	43
+7.2.1	Resource Group Strategy	43
+7.2.2	Asset Tagging	45
+7.3	BILLING	46
+7.4	NETWORK CONNECTIVITY	47
+7.4.1	VNETs	47
+7.4.2	Subnets	49
+7.4.3	Express Route	50
+7.4.4	Backup VPN Links	51
+7.4.5	Internet Connectivity	51
+7.4.6	Availability Zones	52
+7.5	SECURITY	53
+7.5.1	Compliance	53
+7.5.2	Network Security Groups	54
+7.5.3	Application Security Groups	56
+7.5.4	Security Operations	56
+7.5.5	Encryption	56
+7.5.6	Penetration Testing	57
+7.5.7	DDoS Protection	57
+7.6	COMPUTE, STORAGE AND BACKUP	59
+7.6.1	Compute	59
+7.6.2	Storage	61
+7.6.3	Operating Systems	61
+7.6.4	Backup	62
+7.7	IDENTITY	64
+7.7.1	Role Based Acces Control (RBAC)	65
+7.8	AZURE MONITORING AND LOGGING	66
+8.	Foundation Services	67
+
+ 
+1.	DEFINITIONS
+
+1.1	GENERAL DEFINITIONS
+Landing Zone	Landing zone is an enterprise cloud platform with standard set of secured cloud infrastructure, policies, best practices, guidelines, and centrally managed services.	
+
+1.2	AWS DEFINITIONS
+AWS	Amazon Web Services (AWS) is cloud computing platform provided by Amazon. It provides a mix of infrastructure as a service (IaaS), platform as a service (PaaS) and packaged software as a service (SaaS) offerings.	
+AWS Accounts	An agreement with AWS that enables LG to obtain AWS services.
+	Link
+
+Compute
+	Amazon Elastic Compute Cloud (EC2) provides virtual servers and called it instances for compute capacity.	Link
+
+Virtual Public Cloud (VPC)	Amazon Virtual Private Cloud (VPC) gives an administrator control over a virtual network to use an isolated section of the AWS cloud. 	Link
+
+S3 Storage
+	Amazon Simple Storage Service (S3) provides scalable object storage for data backup, archival and analytics. Available in storage tier or use Amazon Glacier for long-term cold storage.
+Link
+
+AWS CloudFormation	CloudFormation allows you to use a simple text file to model and provision, in an automated and secure manner, all the resources needed for your applications across all regions and accounts	Link
+
+AWS Landing Zone	AWS Landings Zone is a solution to setup a secure, multi-account AWS environment based on AWS best practices. This solution will help save time by automating the set-up of an environment for running secure and scalable workloads while implementing an initial security baseline through the creation of core accounts and resources.	Link
+
+
+1.3	AZURE DEFINITIONS
+Azure	Azure is a set of cloud services owned by Microsoft to help businesses meet challenging expectation and goals. 	
+Subscriptions	An agreement with Microsoft that enables LG to obtain Azure services.	Link
+
+Azure Resource Manager (ARM)	The service or technology within Azure used to provision resources in your Azure subscription	Link
+
+Resource Groups	A container in Azure Resource Manager that holds related resources for an application. The resource group can include all of the resources for an application, or only those resources that are logically grouped together.	
+Asset Tag	An indexing term that enables you to categorize resources according to your requirements for managing or billing. When you have a complex collection of resources, you can use tags to visualize those assets in the way that makes the most sense.	Link
+
+Role	A means for controlling access that can be assigned to users, groups, and services. Roles are able to perform actions such as create, manage, and read on Azure resources.	Link
+
+Azure ExpressRoute	A private and resilient way to connect your on-premises networks to Microsoft Cloud	Link
+
+Virtual Network (VNet)	A network that provides connectivity between your Azure resources that is isolated from all other Azure tenants	Link
+
+VNet Peer	Virtual network peering enables you to seamlessly connect two Azure virtual networks.	Link
+
+Availability Set	A collection of virtual machines that are managed together to provide application redundancy and reliability	Link
+
+2.	DOCUMENT MANAGEMENT
+2.1	VERSION HISTORY
+Author	Version	Date	Detail
+Achyut Patil	0.1	05/10/2018	First Draft
+Achyut Patil	0.2	20/11/2018	Amendments based on review with LG review
+Achyut Patil	0.3	28/11/2018	Amendments based on updated Capacity requirements and internal review
+Accenture	1.0	21/01/2019	Amendments based on LG review on 18/01/2019
+2.2	REVIEWS
+Reviewer	Title	Version	Date
+Simon Stocks	Solution Director 	Accenture	
+Lea Dixon	Proxima Programme Lead	Accenture	
+			
+2.3	APPROVALS
+Reviewer	Company	Version	Date
+Tom Simpson	Liberty Global		
+Jon van Terry	Liberty Global		
+			
+			
+
+ 
+3.	PROJECT OVERVIEW
+3.1	BACKGROUND
+Liberty Global has embarked on a Transformation programme across all areas of Data Centre Enterprise (DCE), including application discovery, migration, hosting, standardization, as well as Governance and Target Operating Model changes to the organisation. 
+The Cloud Enablement workstream forms part of the hosting changes being made to the environment and consists of the creation of a standard baseline environments within both AWS and Azure. Each instance will be created using the same standards and base architectures, being across multiple Availability Zones within a Region, and across a minimum of 2 Regions to enable Pan European coverage for Data Residency requirements.
+3.2	OBJECTIVES
+The core cloud enablement project objectives are:
+•	Leverage Cloud infrastructure to provide a scalable and flexible Data Centre hosting
+•	Deliver a Cloud infrastructure to provide Liberty Global with a scalable and agile infrastructure that is stable and reliable
+•	Design a new Public Cloud Data Centre solution with pro-active monitoring and alerting
+•	Design a new secure Public Data Centre solution (note that accreditation and compliance activities will be the responsibility of Liberty-Global)  
+•	Design a cloud infrastructure as a Green-Field environment
+•	Provide the infrastructure basis for improved Disaster Recovery and resiliency capability
+•	Enable the Liberty Global Business to deploy Cloud Applications and Services in a supported and sustainable manner
+•	Deliver a Public Cloud solution across both AWS and Azure, in 2 Regions, and with multiple Availability Zones within each Region
+3.3	HIGH LEVEL DESIGN DECISION POINT MATRIX
+Throughout the document Accenture will summarise the outputs and these outputs can be categorised under the following headings:
+*	Design Decision
+A design decision based on Liberty Global’s requirements and AWS / Microsoft recommended best practices.
+
+*	Recommendation
+A recommendation being made by Accenture, but not necessarily a design decision.
+
+!	Note
+This header is to make the reader aware of something specific in the document and will give some additional context to the section.
+
+!	Important Note
+This header is to ensure the reader is fully aware of the point being highlighted. The information provided should be fully considered when understanding the context of the section.
+
+*	Assumption
+Based on the workshops and knowledge of Liberty Global’s infrastructure, assumptions on requirements are listed.
+
+3.4	PURPOSE OF SIGN-OFF
+The sign-off of this document indicates that the reviewers and signing approvers agree with the high-level solution architecture for the public cloud landing zones in AWS and Azure. This document will feed into the Low-level design.
+
+ 
+4.	MANAGEMENT SUMMARY
+4.1	PURPOSE OF DOCUMENT
+The purpose of the Public Cloud High-Level Design (HLD) is to define the solution architecture and the high-level design of different components that will be deployed in the public cloud landing zones. The architecture is based on best practices, recommendations and the requirements from Liberty Global to have fully operational Public Cloud landing zones. The HLD will cover both public cloud platforms – AWS and Azure.
+4.2	SCOPE
+4.2.1	IN SCOPE
+The scope of this document can be found below:
+•	Define the high-level solution architecture for public cloud landing zones – AWS and Microsoft Azure
+•	Define architecture for only components related to enabling IaaS services
+•	Details on the capacity planning for the public cloud
+4.2.2	OUT OF SCOPE
+This document does not refer to any of the following items:
+•	Details on low-level design and configuration of the architecture and the components mentioned in this document
+•	Define design of the foundational services that will be implemented in the public cloud. These will be carried out as separate activities along with Liberty Global.
+•	Design high-availability for applications
+•	Design DR for public cloud platform
+4.2.3	ASSUMPTIONS
+•	The landing zones deployed as part of the Proxima project will be greenfield deployments
+•	Only IaaS services will be provided initially within the public cloud landing zones
+•	Direct Connect and ExpressRoute will be the primary connectivity method used to connect with on-premises systems
+•	All links to AWS and Azure will be at least 1 Gbps.
+•	Integration with on-premises key management systems such as UIM will not be required as AWS Key Management Service (KMS) will be used.
+4.2.4	DEPENDENCIES
+•	Foundation Services design to extend the services into Public Cloud will need to be provided by LG. 
+4.2.5	RISK
+•	Allocation of unique IP address subnet that is routing across LG enterprise network and are non-overlapping
+•	Due to over-lapping IP address ranges, the IP ranges deployed initially in the public cloud landing zones may not fulfill the capacity requirements
+ 
+4.2.6	REQUIREMENTS
+The below document lists the requirements gathered for Public Cloud enablement. The HLD will ensure that the design decisions are in line with the requirements where applicable.  
+  
+5.	SOLUTION ARCHITECTURE
+5.1	AWS
+The AWS landing zones will be deployed in 2 regions – Frankfurt (EU-Central-1) and London (EU-West-2). These landing zones will be connected to the on-premises datacentres using Direct Connect which will provide a dedicated private connectivity between AWS and the on-premises datacentres in both EU and UK.
+Separate AWS accounts will be created for PROD and Non-PROD workloads including master, logging, security and shared services accounts which will be used for consolidated management of all AWS accounts in the organization.
+The following diagram shows the high-level architecture for AWS Landing Zone:
+ 
+Figure 1 - AWS Conceptual Design
+5.2	MICROSOFT AZURE
+The Microsoft Azure landing zones will also be deployed in 2 regions – Frankfurt (Germany Central) and London (UK South). These landing zones will be connected to the on-premises datacenters using ExpressRoute which will provide a dedicated private connectivity between Azure and the on-premises datacenters in both EU and UK.
+Separate Azure subscriptions will be created for PROD and Non-PROD workloads and resource groups will be used within the subscriptions to segregate workloads based on their usage
+The following diagram shows the high-level architecture for Microsoft Azure Landing Zones:
+ 
+Figure 2 - Azure Conceptual Design
+5.3	CAPACITY PLANNING
+The capacity requirements gathered during the HLD discussions of the project have been used to plan the capacity for the public cloud which will be used to determine the workload capacity, network, bandwidth requirements, etc. 
+Platform	Year 1	Year 2
+AWS	800	1920
+Azure	800	1920
+Table 1 - AWS & Azure Capacity Requirements
+5.4	NAMING CONVENTIONS
+Resources in the AWS Public Cloud will use the following naming convention:
+Attributes	Description	Values
+Cloud Platform	Cloud Platform where Virtual System is Deployed	AW – Amazon AWS
+AZ – Microsoft Azure
+Environment	Environment where virtual machine will be deployed	P – Production
+N – Pre-Production
+S – Shared Services
+APP	Type of application being deployed	XXX
+E.g. ORA – Oracle server
+Role	Role of the application that will be run on Server	Web - web
+Application - app
+Database - dba
+NSA Level	NSA Level of Server	02 – Level 2
+03 – Level 3
+04 – Level 4
+05 – Level 5
+06 – Level 6
+Numerical Number	Numerical Number of Server	001-999
+Table 2 - Naming Convention
+
+The table above is a reference for the naming convention to be followed in Public Cloud. The convention is defined in line with SDDC and NSA levels. This allows the solution to maintain a White List approach to security, allowing all services to be inherently blocked from each other, and only through specific rules or policies be able to communicate.
+Format	{Cloud Platform} + {Environment} + {APP + ROLE} + {NSA Level} + {Number}
+Example Split	aw + p + sap + web + 2 + 001
+Final Name	awpsapweb2001
+Table 3 – Example Naming Convention
+
+!	Important Note
+The above format needs to be validated and confirmed by LG and will be documented in the low-level design
+ 
+6.	AWS HIGH-LEVEL DESIGN
+The following diagram shows the conceptual design of the AWS Landing zones in EU and UK:
+
+ 
+Figure 3 - AWS High-Level Design
+6.1	LANDING ZONES
+A Landing Zone is a collection of AWS accounts, infrastructure, and automation that typically correspond to a region.  Liberty Global will initially have 2 landing zones deployed across the following 2 regions:
+•	Frankfurt (EU Central)
+•	London (UK South) 
+Each of the regions have 3 Availability Zones (AZs) and initially 2 AZs will be used to deploy workloads to provide redundancy for applications.
+*	Design Decision
+AWS Landing Zones will be deployed in Frankfurt and London. 
+
+6.2	ACCOUNT MANAGEMENT
+An AWS Account is a formal relationship with AWS that is the top-level umbrella under which resources are hosted. The resources include compute, storage, databases, VPC, etc. An AWS account serves as:
+•	Highest level of separation of resources
+•	A security and administrative boundary where users and IT staff can be granted access to perform tasks within the AWS account
+•	As billing unit for granularity where usage and consumption reports can be viewed for all resources in the AWS account
+At Liberty Global, a multi-account structure based on AWS Organizations will be implemented based on best practices for deploying Landing Zones. This structure will help achieve: 
+1)	Central management of all AWS Accounts
+2)	Billing isolation by accounts if required to report on AWS resource consumption with the ability to associate specific AWS costs to a particular application, workloads, environment, cost center or business units (BU).
+3)	Resource Isolation based on the workload types, development lifecycle (PROD/Non-PROD), BU, or data sensitivity.
+The following 6 AWS accounts – 4 Core accounts and 2 accounts to host the workloads will be deployed initially at LG:
+No.	Account Name	Purpose	Account Number
+1	Master	AWS Organizations and Consolidated Billing Account.	<TBC>
+2	Security	Account to host all organization wide IAM and cross-account roles. Also to be used by Security team to auidt compliance.	<TBC>
+3	Logging	Account to store all  AWS CloudTrail and AWS Config logs from all AWS account across the Organization	<TBC>
+4	Shared Services	Account to hold all common shared services such as directory services, jump servers, etc.	<TBC>
+5	PROD	Will host all production IaaS workloads including foundation services	<TBC>
+6	Non-PROD	Will host all non-production workloads including DEV/Test environments	<TBC>
+Table 3 - AWS Accounts
+*	Design Decision
+As per Landing Zone best practices, 4 core and 2 workload accounts will be deployed in AWS.
+The above design decision(s) were taken in accordance with the below requirements:
+RG14 - All AWS/Azure accounts should be linked to a libertyglobal.com account. 
+RG31 - All Cloud accounts should be linked to a Master account.
+
+6.2.1	AWS ORGANIZATIONS
+“AWS Organizations” is an account management service that enables consolidation and management of multiple AWS accounts into an organization. AWS Organizations includes consolidated billing and account management capabilities that enable organizations to better meet the budgetary, security, and compliance needs. New AWS accounts can be created, or existing AWS accounts can be invited to join the organization.
+AWS Organizations offers the following features:
+•	Centralized management of all AWS accounts
+•	Consolidated billing for all member accounts
+•	Hierarchical grouping of accounts to meet budgetary, security, or compliance needs
+•	Control over the AWS services and API actions that each account can access
+•	Integration and support for AWS Identity and Access Management (IAM)
+With an AWS Organization, accounts can be organized in a hierarchical tree-like structure with a root master account at the top and organizational units (OU) nested under the root. Each account can be directly in the root or placed in one of the OUs in the hierarchy. More details on AWS Organizations can be found in the following link: https://aws.amazon.com/organizations/ 
+As part of the LG Proxima project the following AWS Organization structure will be implemented:
+ 
+Figure 4 - AWS Organization Structure
+The “Master” AWS Account will be used as the AWS Organization account. This account will be used to manage configuration and access for other AWS accounts including consolidated billing for all accounts.
+The following table lists the OUs that will be created and accounts under each OU:
+Organizational Units	Accounts
+Core	Security
+	Logging
+	Shared Services
+LG	PROD
+	Non-PROD
+Table 4 - Organizational Units and Accounts
+Based on Liberty Global’s desire to consolidate AWS accounts within the organisation, with the above structure, existing or new accounts can be brought under the management of this AWS Organization by adding accounts to existing OU structure or creating new ones.
+
+*	Design Decision
+AWS Organizations will be implemented within LG to consolidate the management of multiple AWS accounts within the organization
+
+*	Recommendation
+Accenture recommends to create new AWS accounts within this OU structure when creating new AWS account or to consolidate existing accounts under one master account
+
+ 
+6.3	ASSET TAGGING
+AWS allows customers to assign metadata to AWS resources in the form of tags. A tag is a simple label consisting of a customer-defined key and an optional value that can make it easier to manage, search for, and filter resources. Asset tagging enables categorization of resources according to requirements for managing resources or billing.
+A custom tag taxonomy can be created to ensure that all users within the organization use common tags rather than users inadvertently applying different tags.
+Within LG, a custom tag taxonomy will be created to ensure that all resources within the organization use common tags. A common tagging between Public Cloud and SDDC will be used which can then be used when deploying resources using cloud brokerage tool as well.
+Tags have some restrictions like length of character, how many tags a resource can have. The complete details are listed here - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_Tags.html#tag-restrictions 
+Here is a recommended tagging policy that can be used.
+Tag Name	Description	Possible Values
+Name	Sample-hostname-01	Name based on Naming Conventions
+Description	Virgin Media SAP DEV Web Server	Short Description of the resource
+OPCO	VM or UM	Virgin / Unity Media
+Billing Code	12345	Billing Code or Cost Entity that has fiscal responsibility for the resource
+Environment	p	1-Letter code
+Table 5 – Tags Naming Conventions
+The AWS Low-Level Design will expand on Naming Conventions defined for specific resource types – the above tags must be defined for every created resource in AWS.
+*	Design Decision
+Resource Tagging will be used to assign tags on all AWS resources
+The above design decision(s) were taken in accordance with the below requirements:
+RG08 - Detailed visibility of billings is required down to a per-device level
+RG09 - Resource tagging will align with account owners to provide granular billing show back
+
+
+ 
+6.4	BILLING
+AWS offers consolidated billing feature in LG Cloud environment to consolidate payment for multiple accounts as per Landing Zone best practices. AWS Landing zone deploys AWS Organizations which provide consolidated billing and account management capabilities for all accounts. Each Organization has a master account that’s pays the charges for members accounts and view combined charges of the AWS and are incurred by the member account, get the cost report for each member Account.
+AWS Consolidated billing has the following benefits:
+•	One Bill
+•	Easy Tracking 
+•	Combined usage
+Asset tagging allows for grouping resources that might not otherwise be easily associated. These tags can be used for billing or to show resources that are part of the same department or part of any complex configuration that may otherwise be hard to view and provide billing. 
+AWS Resource Groups allows you to organize AWS resources into logical groupings to manage them as a one resource. These groups can represent an application, a software component, or an environment. A resource group is a collection of resources that share one or more tags or portions of tags. Using tags in conjunction with Resource Groups will help gather information about tagged resources in one place including billing. 
+Additionally by tagging resources, billing will allow viewing costs at a granular level for LG’s finance teams and its customers, this would satisfy requirements RG08, RG09 and RG10 respectively.
+The following diagram shows an example of AWS Consolidated Billing.
+ 
+Figure 5 - AWS Consolidated Billing
+*	Design Decision
+AWS Consolidated billing provide per-device, per account visibility on cost and billing. This will be available in the Master AWS account.
+The above design decision(s) were taken in accordance with the below requirements:
+RG08 - Detailed visibility of billings is required down to a per-device level
+RG09 - Resource tagging will align with account owners to provide granular billing show back
+RG10 - Cloud consumers should be able to have visibility of their costs and billing
+6.5	NETWORKING
+6.5.1	VPC
+Amazon Virtual Private Cloud (Amazon VPC) is a logically isolated virtual network, spanning an AWS Region, where AWS resources such as EC2 instances, storage and databases are launched. A VPC is primarily concerned with enabling the following capabilities:
+•	Isolating your AWS resources from other accounts
+•	Routing network traffic to and from your instances
+•	Protecting your instances from network intrusion
+Within AWS, based on the account structure mentioned in section 6.2, a total of 6 VPCs (3 in each region) will be created as per below table: 
+ No.	VPC Name	AWS Account	Region	Purpose
+1	SharedServices-EU	SharedServices	eu-central-1	Shared Foundation Services in EU region
+2	PROD-EU	PROD	eu-central-1	VPC for Production Webservers, applications and databases in EU
+3	NonPROD-EU	NonPROD	eu-central-1	VPC for non-production servers in EU
+4	SharedServices-UK	SharedServices	eu-west-2	Shared Foundation Services in UK region
+5	PROD-UK	PROD	eu-west-2	VPC for Production Webservers, applications and databases in UK
+6	NonPROD-UK	NonPROD	eu-west-2	VPC for non-production servers and applications in UK
+Table 6 - AWS VPCs
+The Master, Security and Logging AWS accounts will not have any VPCs configured in them.
+The VPCs will be able to communciate with each other through VPC Peering Connections. Transitive peering connections are not supported and all VPCs that need to talk to each other must be paired individually. The AWS LLD will document the VPC peering connections and their configurations.
+*	Design Decision
+A total of 3 VPCs – 1 in Shared Services, 1 in PROD and 1 in Non-PROD accounts will be created per region. 
+The above design decision(s) were taken in accordance with the below requirements:
+RG49 - Separate VPC for Production and Non Production within a Region should be used for the base platform with separation through Security Groups.
+
+6.5.1.1	VPC NETWORK RANGES
+A VPC needs to be assigned with high level network address ranges (CIDR ranges) which in turn are used by the resources deployed within that VPCs through subnets. 
+As the VPCs will communicate with LG on-premises datacentres, the address ranges need to be a non-overlapping CIDR range with the on-premises IP ranges. 
+Some of the other best practises are:
+•	Do not allocate all network addresses at once; instead ensure that some address space is reserved for future use.
+•	Size VPC CIDR and subnets to support significant growth for the expected workloads.
+Based on the capacity requirements documented in section 5.3, to accommodate for the 3 year growth of workloads in AWS, a CIDR block with mask bit /19 will be required which will provide 8190 IP addresses.
+If an contigious non-overlapping CIDR range is not available to be allocated at the time of implementation, a smaller CIDR range can be initially assigned and more ranges can be added later as secondary CIDR ranges to the VPCs. More information can be found here.
+Based on discussions with LG Network team, a contigious CIDR range will be assinged to AWS VPCs. This will be dcoumented in the LLD phase of the project.
+6.5.1.2	SUBNETS
+Within an AWS VPC, a subnet is a segment of a VPC’s IP address range where groups of isolated resources can be placed together. 
+Here are the recommended best praticses for subnets:
+•	Divide the VPC network range evenly across all available Availability Zones (AZs) in a region. This will allow workloads to be evenly distributed across all AZs and provide some redundancy if an AZ becomes unavailable
+•	Create one subnet per available AZ for each group of hosts that have unique routing requirements (e.g., public vs. private subnets)
+As per requirements from Security (Req ID RG54), the subnets will reflect the NSA levels and will be accordingly divided as follows:
+Subnets	NSA Level	VPC	AWS Account
+Public Subnet	Level 2/3	PROD, Non-PROD	PROD, Non-PROD
+Apps Subnet	Level 4	PROD, Non-PROD	PROD, Non-PROD
+Database Subnet	Level 5/6	PROD, Non-PROD	PROD, Non-PROD
+SharedServices Subnet	Management	SharedServices	SharedServices
+Table 7 - AWS Subnets
+To avoid complexities of distributing workloads and configuring subnets across all 3 availability zones, it is recommended to use only 2 Availability zones to start with. This would allow a smaller and efficient subnet design that will allow to accommodate for any smaller CIDR ranges assigned by the IPAM team to the public cloud platforms. This will still provide high-availability for workloads across 2 availability zones.
+The following diagram shows an example of how the subnets will be configured within the PROD VPC:
+ 
+Figure 6 - VPC Subnet Layout Example
+The subnet layout across all VPCs will be detailed in the AWS LLD when the correct CIDR ranges would have been assigned by the IPAM team.
+*	Design Decision
+The subnets will be designed as per the requirement of the NSA levels to segregate the different workloads
+The above design decision(s) were taken in accordance with the below requirements:
+RG54 - Minimum 3 distinct Subnets to separate Front End services, Applications and Databases to provide additional level of separation
+
+*	Design Decision
+The subnets layout will only span across to 2 Availability zones to accommodate for smaller CIDR ranges allocated by the IPAM team
+The above design decision(s) were taken in accordance with the below requirements:
+RG03 - The Cloud platform must be resilient against a full Datacentre failure
+ 
+6.5.2	DIRECT CONNECT
+AWS Direct Connect is a network service that allows a customer to establish a dedicated network connection between one of Amazon's Direct Connect locations and the customer's data center or colocation environment. 
+Direct Connect provides Amazon Web Services (AWS) customers with a way to transfer data that does not involve using the public Internet. According to Amazon, private network connections provide a safer, more consistent network experience than Internet-based connections.
+Direct Connect will allow LG to connect their on-premises environments into AWS securely and privately. Direct Connect links will be setup into each of the regions
+Direct Connect Location	Direct Connect Partner	Link Speed
+Frankfurt	TBC	>1Gbps
+London	TBC	>1Gbps
+Table 8 - DirectConnect Locations
+The below diagram shows the LG AWS Direct Connect high-level architecture.
+ 
+Figure 7 - Direct Connect High-level Architecture
+
+*	Design Decision
+At LG, Direct Connect will be used as the primary method for connecting on-premises systems with AWS. A Standard Unlimited circuit of at least 1Gbps will be deployed.
+The above design decision(s) were taken in accordance with the below requirements:
+RG35 - Using AWS Direct Connect/Express route to establish private connectivity between cloud provider and data center.
+
+6.5.3	BACKUP VPN CONNECTIVITY
+In addition to the Direct Connect links, backup VPN links over the Internet will be setup for redundancy in the event the Direct Connect links become unavailable.
+VPN links are created per VPC. So, a VPN link needs to be created for each of the VPCs.
+The below diagram shows the backup VPN connectivity between the production and non-production environments as well as the backup VPN links.
+ 
+Figure 8 - AWS VPN Connections
+*	Design Decision
+At LG, backup VPN connections will be created for on-premises connectivity.
+6.5.4	OUTBOUND INTERNET CONNECTIVITY
+Private instances and workloads may need outbound internet connectivity for use cases such as:
+•	Patching and installer repositories (e.g. Red Hat and Git)
+•	Software-As-A-Service (SaaS) Agent Telemetry and Messaging (e.g. Tenable Nessus Scanners)
+•	Access to APIs (e.g. Google Maps and reCAPTCHA)
+From an AWS design perspective, a network address translation (NAT) gateway can be implemented in a private subnet (the gateway itself running in a subnet shared with an internet gateway) to allow outbound internet connectivity. 
+However, LG may implement a more secure design by implementing a proxy farm (e.g. Squid Proxies) hosted in a Shared Services VPC within the Shared Services AWS account to effectively whitelist, log and monitor outbound internet traffic. 
+ 
+Figure 9 - Shared Services Outbound Proxy
+*	Recommendation
+Accenture recommend LG to implement a proxy service for workloads that require outbound Internet connectivity in the Shared Services account.
+
+6.6	SECURITY
+6.6.1	AWS COMPLIANCE
+Amazon Web Services makes cloud security the highest priority. As an AWS customer, LG benefits from a data center and network architecture built to meet the requirements of the most security sensitive organizations. 
+AWS works with global programs to ensure that services are compliant with (but not limited to):
+•	ISO 9001 – Global Quality Standard
+•	ISO 27001 – Security Management Controls
+•	PCI DSS Level 1 – Payment Card Standards
+•	G-Cloud – UK Government Standards
+•	Cyber Essentials Plus – Cyber Threat Protection
+Additional regulatory and compliance programs available here:  https://aws.amazon.com/compliance/programs/ 
+While LG benefits from infrastructure services that are compliant with the global compliance programs – by default the certification only applies to the AWS services themselves, not the customer managed elements. Should LG have requirements for PCI DSS compliance, a separate gap analysis and remediation will need to be performed.
+6.6.2	SHARED RESPONSIBILITY MODEL
+LG’s operational, security and compliance burden is relieved through the Shared Responsibility Model – a framework that outlines the AWS responsibility of the cloud and LG’s responsibility for security for services provisioned and consumed on AWS. 
+AWS responsibility “Security of the Cloud” - AWS is responsible for protecting the infrastructure that runs all the services offered in the AWS Cloud. This infrastructure is composed of the hardware, software, networking, and facilities that run AWS Cloud services.
+Liberty Global responsibility “Security in the Cloud” – Responsibility will be determined by the AWS Cloud services that LG selects. This determines the amount of configuration work LG must perform as part of their security responsibilities. When LG deploys an EC2 instance, LG will be responsible for ensuring that the guest operating system is patched, hardened to required standards as well as configured with the appropriate firewall rules to restrict inbound and outbound traffic. 
+ 
+Figure 10 - AWS Shared Responsibilities
+The shared responsibility model does not just cover infrastructure services, but information technology controls as well – the following key controls apply:
+•	Inherited Controls – Physical and Environmental controls
+•	Shared Controls – controls which apply to both AWS-managed and LG-managed layers, however in completely separate contexts or perspectives.
+o	Patch management: AWS is responsible for finding and fixing flaws in its own infrastructure, but LG will be responsible for maintaining the patch level of all guest operating systems
+o	Training: AWS is responsible for training their own employees, but LG is responsible for educating employees on AWS
+•	LG / Customer-Specific – LG may require communications protections, where data may need to be routed by a specific environment (e.g. proxy) or region
+ 
+6.6.3	IDENTITY AND ACCESS MANAGEMENT
+AWS Identity and Access Management (IAM) enables LG to manage access to AWS services and resources securely. Using IAM, LG can create and manage AWS users and groups, and use permissions to allow and deny access to AWS resources. IAM is a globally available AWS service which is offered at no additional charge.
+There are two primary forms of accessing AWS services and resources:
+•	AWS Management Console
+•	Programmatic Access using API Keys
+•	AWS Software Development Kit (SDK) 
+•	AWS Command Line Interface (CLI) and AWS PowerShell tools
+6.6.3.1	USERS AND ROLES
+When the LG AWS account structure is initially established, a root user identity will be created with only the Master account. The combination of e-mail and password provided when creating the Master account will become known as root user credentials. 
+Root user credentials have complete, unrestricted access to all resources in an AWS account, including access to billing information and ability to change the root account password. AWS recommends that IAM users with either LG or AWS managed roles, groups and policies. 
+Note: Linked accounts created from within the AWS Organization will not have a separate root account. 
+•	Users: An IAM user is the basic entity created to represent a person or service requiring interaction with AWS.
+•	Roles: An IAM role is an AWS identity with permission policies that determine what the identity is permitted and not permitted to perform in AWS. Roles are the primary way to grant cross-account access so that a user in a Non-Prod Account can temporarily assume a role in a Production Account.
+•	Groups: An IAM group is a collection of IAM users. Groups enable LG to set roles and policies for multiple users so that role-based access control is managed consistently and efficiently. 
+•	Permissions: A permission represent a specific operation to be performed
+•	Policies: Multiple permissions can be bundled into a policy to define granular access patterns
+ 
+6.6.3.2	IDENTITY FEDERATION
+LG can enable identity federation to manage AWS cloud resources and accounts through Security Assertion Markup Language 2.0 (SAML 2.0) using corporate logon credentials from services like Active Directory.  
+AWS also supports federation via Internet Identity Providers such as Amazon, Facebook, Google or any other platform that uses an OpenID Connect (OIDC) compatible identity provider.
+6.6.3.3	AWS AD CONNECTOR
+AWS AD Connector provides an alternative way to use on-premise credentials to access AWS management console and resources. AD Connector establishes a trusted relationship between Active Directory and AWS and when configured, the trust allows LG to:
+•	Provide federated sign-in to the AWS Management Console by mapping Active Directory identities to AWS Identity and Access Management (IAM) roles.
+•	Seamlessly join EC2 Windows instances to your Active Directory domain 
+•	Sign in to AWS applications using Active Directory credentials.
+At LG, the AD Connector will be configured against the “systems.private” forest. This connection in turn will allow users from other forests that has trusts with “systems.private” forest.
+*	Design Decision
+At LG, the AD integration will be against the “systems.private” forest.
+The above design decision(s) were taken in accordance with the below requirements:
+RG13 - Provide & manage identity in a single place.
+RG34 - Existing AD will be integrated with IAM (AWS and Azure AD)
+6.6.3.4	MULTI-FACTOR AUTHENTICATION
+AWS Multi-Factor Authentication (MFA) is a best practice that adds an extra layer of protection on top of your usernames and passwords that requires an additional (rotating) code/number to be entered. 
+Some of the supported MFA methods are U2F security key, Hardware device, or Virtual MFA device on phones such as Google Authenticator. Please see the following link for all supported devices: https://aws.amazon.com/iam/details/mfa/ 
+All administrative access to AWS Console at LG will require additional authentication using MFA and will be enforced through policies on all accounts. 
+*	Design Decision
+MFA will be enabled on all AWS accounts
+The above design decision(s) were taken in accordance with the below requirements:
+RG16 - Multi Factor Authentication to be mandatory for all privileged account access
+
+!	Note
+For root accounts, it may not be feasible to use virtual MFA device on a mobile device. Hence it is recommended to use a physical MFA device for root account which can be shared between the operations team.
+
+6.6.4	SECURITY GROUPS
+AWS Security Groups are virtual, stateful firewalls that are attached to instances, load balancers and databases to permit ingress and egress traffic. A security group with no ingress or egress rules defined denies all traffic to and from a resource which it is attached to. 
+The following link has more details on Security Groups : https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html 
+Every VPC includes a default security group whose initial rules are to deny all inbound traffic, allow all outbound traffic, and allow all traffic between instances in the group. This group cannot be deleted; however, rules can be modified like any other security group. 
+For every inbound and outbound rule, the following inputs are required:
+Item	Example
+Source (Inbound) Destination (Outbound)	10.232.1.23/32
+Protocol	TCP
+Port Range	53
+Comment	DNS resolution
+Table 9 - Security Group Rules Example
+At LG, Security Groups will be created to segregate workloads access between VPCs using principles defined in the following section. The detailed configuration details will be documented in low-level design.
+*	Design Decision
+Security Groups will be implemented to segregate workloads access between VPCs.
+The above design decision(s) were taken in accordance with the below requirements:
+RG36 - Use security group and ACL for separation inside VPC
+RG49 - Separate VPC for Production and Non Production within a Region should be used for the base platform with separation through Security Groups
+
+While security groups are flexible, the table below defines limitations of security groups in AWS.
+Resource	Default limit	Comments
+Security groups per VPC (per region)	500	The number of VPCs in the region multiplied by the number of security groups per VPC cannot exceed 10000.
+Inbound or outbound rules per security group
+	60	You can have 60 inbound and 60 outbound rules per security group (making a total of 120 rules). This limit is enforced separately for IPv4 rules and IPv6 rules.
+This is a soft limit which can be increased by raising a case with AWS.
+Security groups per network interface	5	The maximum is 16. The limit for security groups per network interface multiplied by the limit for rules per security group cannot exceed 300. 
+This is a soft limit which can be increased by raising a case with AWS.
+Table 10 – AWS Security group Limitations
+!	Note: A security group contains a collection of ports and protocol but must not be treated as a port group. An instance cannot simply send traffic to a non-attached security group with all ports and protocols defined. A security group needs to be associated with a resource and/or existing security group(s).
+
+6.6.4.1	SECURITY GROUPS DESIGN PRINCIPLES
+Typically, creation of security groups should follow the following principles: 
+•	Do not allow unrestricted egress (0.0.0.0/0) traffic
+•	An alternative to 0.0.0.0/0 egress is to enable unrestricted egress to a private subnet (e.g. /26 CIDR block) on which the instance or resource is provisioned
+•	Minimize references to IP addresses where practicable, as IP address changes can lead to costly remediation and rework
+•	Nesting of security groups where applicable – if an instance is required to communicate to an AWS Directory Service domain controller, the security group of the domain controller should be nested as the outbound destination on TCP 53 rather than the privately assigned IP address.
+•	Self-referencing rules – enable two or more instances who share the same security group to pass traffic between themselves
+•	A clear naming convention for security groups should be defined and followed consistently to allow easy management and mitigate duplicates
+The following baseline pattern could be applied to security group design across the LG AWS estate to simplify how security groups are deployed and to enable clear, segregated and common rulesets.
+
+Type	Detail
+Core Security Group	A group attached to instances that serve core, foundation functionality – domain controllers, management and bastion nodes, proxies
+Common Security Group	A group attached to all instances providing nested connectivity to and from shared services. For example:  SSH from bastions, DNS resolution back to AD
+Application Security Group	A group defined specifically for an application and the connectivity it requires to other AWS resources or external sources
+Table 11 - Security Group Baselines
+6.6.5	NETWORK ACCESS CONTROL LISTS
+A network access control list (NACL) is an optional layer of security for a VPC that acts as a firewall for controlling traffic in and out of one or more subnets. LG may choose to leverage network ACLs with rules like security groups to add an additional layer of security to a VPC. Every subnet in a VPC must be associated with a network ACL – if none is specified, the default network ACL is associated and allows all outbound and inbound traffic on all ports. 
+A network ACL contains a numbered list of rules that are evaluated in order, starting with the lowest numbered rule, to determine whether traffic is allowed in or out of any subnet associated with the network ACL. The highest number that you can use for a rule is 32766.
+Compared to a security group, a NACL is stateless – responses to allowed inbound traffic are subject to allowed outbound traffic, and vice versa. 
+Implementation and configuration of network ACLs provide a means to defense in depth, however consistent and strong security group design and protocol can eventually supersede requirements to use network ACLs for perimeter security.
+Additional NACLs will be implemented where necessary to further secure the VPCs. Details will be documented in the LLD.
+*	Design Decision
+NACLs will be implemented to secure VPCs where appropriate.
+The above design decision(s) were taken in accordance with the below requirements:
+RG36 - Use security group and ACL for separation inside VPC
+6.6.6	PENETRATION TESTING
+AWS requires that penetration testing or other simulated events are only conducted after explicit permission is sought and received directly from AWS for all testing as prohibited security violations and network abuse are often indistinguishable from these types of activities. 
+AWS penetration testing policy currently limits testing to only the following services: 
+•	Elastic Compute Cloud (EC2)
+•	Relational Database Service (RDS)
+•	Aurora
+•	CloudFront
+•	API Gateway
+•	Lambda
+•	Lightsail
+•	DNS Zone Walking
+Additionally, to safeguard against performance impacts to other customers using shared compute resources, testing of small or micro sized EC2 or RDS instances are not permitted.
+!	Important Note
+Penetration Testing can only be be performed on certain AWS services and with explicit permission from AWS
+6.6.7	DATA PROTECTION
+6.6.7.1	CERTIFICATES AND KEY MANAGEMENT
+AWS Certificate Manager (ACM)
+AWS Certificate Manager is a service that enables easy provisioning, management, and deployment of public and private Secure Sockets Layer/Transport Layer Security (SSL/TLS) certificates for use with AWS services and internally connected resources. 
+ACM removes the time-consuming manual process of purchasing, uploading, and renewing SSL/TLS certificates by providing a facility to provision certificates while also providing a means to upload privately owned and purchased certificates for use with AWS ACM-enabled resources – such as Elastic Load Balancers, CloudFront Distributions (content-delivery network) and API endpoints on API Gateway.
+AWS Key Management Service (KMS)
+AWS Key Management Service gives LG centralized control over the encryption keys used to protect Liberty Global data. LG can create, import, rotate, disable, delete, define usage policies for, and audit the use of encryption keys used to encrypt data. 
+AWS Key Management Service is integrated with most other AWS services making it easy to encrypt the data stored in these services with encryption keys LG controls. AWS KMS is integrated with AWS CloudTrail which provides the ability to audit who used which keys, on which resources, and when. 
+At a high-level, AWS provides the following options for keys:
+•	AWS managed keys (AES-256) which AWS provide by default for encryption and are automatically rotated and backed up across fault domains for durability without any customer intervention
+•	Customer-generated AWS keys which can enable LG to use different sets of keys to encrypt workloads whilst still maintaining key durability
+•	Customer imported keys – LG may choose to import existing key material for use with AWS KMS, however must keep a secure copy as AWS is not responsible for ensuring imported key durability
+More details can be found at the following link: https://aws.amazon.com/kms/?nc2=h_m1 
+
+*	Design Decision
+AWS Key Management Service will be used for all Linux and Windows workloads. 
+6.6.7.2	ENCRYPTION
+AWS provide multiple options to encrypt data at transit and rest. There are no specific requirements from LG to encrypt general EC2 workloads and storage except NSA level 6.
+All Liberty Global NSA level 6 workloads – databases and secure data - are required to be encrypted at rest. To facilitate this, EC2 instance stores can be encrypted using different methods.
+Because Amazon EBS volumes are presented to an instance as a block device, most standard encryption tools for file system-level or block-level encryption can be leveraged.
+Some common block-level open source encryption solutions for Linux are Loop-AES, dm-crypt and TrueCrypt. Each of these operates below the file system layer using kernel space device drivers to perform encryption and decryption of data. Another option would be to use file system-level encryption. Both these solutions require you to provide keys, either manually or from KMS.
+Encrypting Amazon EBS volumes attached to Windows instances can be done using BitLocker or Encrypted File System (EFS) as well as open source applications like TrueCrypt. In either case, you still need to provide keys to these encryption methods and you can only encrypt data volumes.
+*	Design Decision
+All NSA level 6 workloads (databases and secure data) will be encrypted at rest.
+The above design decision(s) were taken in accordance with the below requirements:
+RG23 - Data encryption at rest for workloads deemed as Layer 6 in the Network Security Agreement
+RG24 - Encryption policy to be consistent across public and private cloud
+
+!	Note
+Encrypted workloads cannot be simply shared between multiple accounts (e.g. for code promotion from environment to environment) – if default AWS managed keys are used, data must be decrypted manually prior to sharing to another account. However, if customer-managed keys are in-use; permissions can be set up in advance to allow separate accounts to decrypt each other’s data.
+6.6.8	OS HARDENING
+OS hardening for every deployed instance should be implemented to Liberty Global security standards or as required for compliance and auditing.
+For example, Windows workloads should be joined into a domain that enforces a secure and consistent group policy.
+6.6.9	MALWARE THREAT PROTECTION
+Liberty Global is recommended to implement host-level malware threat prevention and protection (anti-virus, vulnerability scanning) to increase security posture in the AWS Cloud. 
+AWS provides an application security service – AWS Inspector which can be used to detect and benchmark application flaws and vulnerabilities against popular standards – such as the Centre for Internet Security (CIS).
+6.6.10	DDOS PROTECTION
+For externally-facing environments and systems, Liberty Global should implement distributed denial of service (DDoS) protections, however the AWS Web Application Firewall (WAF) service is currently not available in the AWS London region at time of writing. Alternatively, LG may choose to use AWS CloudFront – a content delivery network (CDN) which has built-in AWS Shield support as well as an option to leverage AWS Shield Advanced, providing DDOS protection to web workloads. Malicious traffic would be managed at the CDN level, rather than overwhelming load balancers or proxy servers. 
+Additionally, the AWS Marketplace offers WAFs and DDoS mitigation services from third parties; such as Barracuda, Cloudflare or Imperva.
+!	Important Note
+AWS Web Application Firewall (WAF) service is currently not available in the AWS London region at time of writing.
+
+ 
+6.7	COMPUTE, STORAGE AND BACKUP
+At LG, the AWS platform will be used as an IaaS platform initially. As part of the deliverable MD022 – Public Cloud Solution Blueprint, the high-level compute requirements and catalogue of instance types that will be made available were defined agreed.  The following section summarises the compute, storage and backup design for AWS
+6.7.1	COMPUTE
+As part of the Solution Blueprint, it was agreed that to standardise the compute workloads within AWS and Azure, instance size categories will be used to define the different types of compute instances that will be initially available as part of the service catalogue within the public cloud. 
+The below table lists the high-level categories of instance types that will be available in the LG catalogue.
+Category	Example Use Cases
+General Purpose	Generic applications, web servers, dev/test environments, Microservices, jump servers, core services
+Memory Optimised 	High-performance database servers, applications performing real-time big data.
+Table 12 - Instance Categories
+The following tables list the AWS EC2 Instance types that will be available under General Purpose and Memory Optimised.
+General Purpose Compute
+AWS EC2 Mapping	CPU Cores	Memory (GiB)	Storage Tier Recommendation
+t3.small	2	2	Throughput Optimized HDD (st1)
+m4.large	2	8	General Purpose SSD (gp2)
+m4.xlarge	4	16	General Purpose SSD (gp2)
+m5.2xlarge	8	32	General Purpose SSD (gp2)
+m5.4xlarge	16	64	General Purpose SSD (gp2) or Provisioned IOPS SSD (io1)
+Table 13 - General Purpose Instance types
+Memory Optimised Compute
+AWS EC2 Mapping	CPU Cores	Memory (GiB)	Storage Tier Recommendation
+r4.xlarge	4	30.5	General Purpose SSD (gp2)
+r5.2xlarge	8 	64	Provisioned IOPS SSD (io1)
+r5.4xlarge	16	128	Provisioned IOPS SSD (io1)
+r4.8xlarge	32	244	Provisioned IOPS SSD (io1)
+Table 14 - Memory Optimised Instance Types
+More information on Instance types can be found in the following link: https://aws.amazon.com/ec2/instance-types
+6.7.1.1	RESERVED INSTANCES
+AWS Reserved Instances (RIs) provide a significant discount when compared to on-demand EC2 instances. From an AWS perspective, reserved instances do not represent specific EC2 instances, rather billing constructs to help provide a discounted hourly rate and optional capacity reservation for EC2 instances. When an EC2 instance’s attribute match those of a purchased RI, AWS Billing automatically applies the discounted rate.
+While Reserved Instances provide savings, if feasible, it is recommended to initially provision applications on On-Demand instances in the short term to determine capacity and system utilization requirements prior to committing to a yearly or multi-year contract.
+LG want to utilize RIs for all instance types as this provides opportunity to allocate capital expenditure for compute on the public cloud platforms. Details on the breakdown/allocation on the RIs and how they will be utilized will need to be decided. 
+More information on RIs can be found here - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html 
+*	Design Decision
+Reserved Instances will be utilised for compute workloads where possible
+The above design decision(s) were taken in accordance with the below requirements:
+RG44 - Reserved Instance will be used for all Compute
+
+6.7.2	STORAGE
+AWS provide the following storage options and below are the recommendations on where to use each type of storage.
+Storage Type	Definition	Categories/Tiers	Recommendations
+Elastic Block Store (EBS)	Highly available and reliable disk storage volumes for use with EC2 instances	1)	General Purpose SSD (gp2)
+2)	Provisioned IOPS SSD (io1)
+3)	Throughput Optimized HDD (st1)
+4)	Cold HDD (sc1)	•	Use EBS as storage volumes attached to the instance as primary storage for files and databases. 
+•	Use General Purpose SSD for most common workloads
+•	Use IOPS SSD for database workloads and applications that require sustained IOPS
+•	Use HDD volumes for streaming workloads, data warehouses, log processing
+Elastic File System (EFS)	EFS is an AWS managed, scalable network file system	N/A	•	Use EFS where shared file storage is required and needs to be accessed from multiple instances.
+
+Simple Storage Service (S3)	S3 is object storage that is scalable, high-speed, low-cost, web-based cloud storage service designed for online backup and archiving of data and application programs.	1)	S3 Standard
+2)	S3 Standard-IA
+3)	S3 One Zone-IA
+4)	Amazon Glacier	•	Use S3 standard for most applications & websites and object storage that require data to be stored and retrieved frequently
+•	Use S3 IA for all storing backups snapshots, etc.
+•	Use Glacier for long-term archives
+Table 15 - AWS Storage Types
+
+!	Important Note
+AWS storage capacity cannot be purchased upfront and can only be used on-demand basis. As result, all storage costs will be operational expenditure and will be billed monthly as per usage.
+
+6.7.3	OPERATING SYSTEMS
+As part the Solution Blueprint catalogue, the following operating system blueprints will be available in AWS.
+Operating System and Stack Applications	Version	AWS	Azure
+Red Hat Enterprise Linux	7.5	✔	✔
+Oracle Linux	7.5	✔	✔
+Windows Server 2012 R2	Standard	✔	✔
+Windows Server 2012 R2 with SQL Server 2016 Standard	Standard	✔	✔
+Windows Server 2016	Standard	✔	✔
+Windows Server 2016 with SQL Server 2016 Standard	Standard	✔	✔
+CentOS	7.5	✔	✔
+Ubuntu	18.10	✔	✔
+Table 16 - OS Blueprints
+The above images will be available as AMIs within AWS which will be managed and updated by LG and will be customized as per LG security standards. 
+All instances deployed will be managed as per current LG operations procedure. These include
+•	Central AV and patch management on all instances
+•	Windows instances will be part of the domain and managed within the AD
+•	Windows Instances can have SCOM agent for monitoring at OS level
+6.7.4	BACKUP
+Backup & Recovery capabilities are required to protect EC2 and RDS instance data against accidental deletion, malicious intent (ransomware, malware), software corruption or infrastructure failures.
+The AWS Cloud provides native backup capabilities in the form of EBS snapshots, Amazon Machine Images (AMIs) for EC2 instances as well as similar capabilities for RDS databases.
+6.7.4.1	EC2 INSTANCE BACKUPS
+EBS Volumes attached to EC2 instances can be backed up by taking point-in-time EBS snapshots, which are technically stored in Amazon S3. Snapshots are incremental backups, which means successive snapshots only capture changed blocks since the last snapshot was saved. When a snapshot is deleted, data unique to the deleted snapshot is removed. AWS has engineered snapshots so that each snapshot contains all the information required to restore data to a new EBS volume.
+Amazon Machine Images (AMIs) provide the information required to launch a new instance and at their core, are comprised of EBS snapshots registered with a template for the root volume (operating system, applications), launch permissions that control which AWS accounts can use the AMI as well as block device mappings that specify which volumes are to be created when the instance is launched.
+From the AWS Management Console or the AWS CLI, an AMI can be easily created from an existing EC2 instance, whether it is running or in a shutdown state. Additionally, an AMI can be shared with other AWS account or purchased pre-configured with third-party applications and platforms from the AWS Marketplace.
+AWS offers a solution called the AWS Ops Automator that can enable Liberty Global to use time-based or event-based triggers to automatically manage AWS resources across regions and accounts. The solution enables Liberty Global to configure custom schedules to automatically create, copy and delete Amazon EBS snapshots.
+As the Liberty Global AWS estate grows and matures, third-party backup solutions could be considered to replace native backup and recovery capability for EC2 instances whilst also providing a path to migrations (e.g. exporting an existing virtual machine backup to AWS).
+The below table shows the current backup requirements along with their RPO/RTO as well as their retention periods. The current requirements are based on a service tier that each application/workloads will belong to accordingly backed up.
+Service Tier	Retentions	RPO	RTO
+Basic	8 days	24 hours	24 hours
+Standard	14 days	24 hours	12 hours
+Advanced	35 days	24 hours	6 hours
+Premium	95 days	24 hours	4 hours
+Table 17 - Current Backup and Retention Policies
+As part of the the LLD, snapshot backup policies will be documented to backup the instances based on the above schedule. Dev and test workloads in Non-PROD account by default will not be backed up.
+*	Design Decision
+EC2 Snapshot schedule will be used to backup production EC2 instances and the attached storage volumes
+
+
+
+
+
+ 
+6.8	AWS LOGGING
+AWS CloudTrail service provides the capabilities to log, monitor, and retain account activity related to actions across the AWS infrastructure. CloudTrail provides event history of your AWS account activity, including actions taken through the AWS Management Console, AWS SDKs, command line tools, and other AWS services. It places all logs to a designated S3 bucket. CloudTrail Log files contains: Amazon EC2 Log, IAM Log, Error Code and Message Log.
+CloudTrail allows organizations to:
+•	Compliance Auditing
+•	Operational Troubleshooting
+•	Security Analysis
+AWS CloudTrail integrates with Amazon CloudWatch Logs help to enhance more monitoring capabilities based on defined custom metrics & alarms and send notification to respective operations teams. The below diagram shows how CloudTrail and CloudWatch integration to collect logs and send notifications:  
+ 
+Figure 11 - AWS Logging via CloudTrail
+As per AWS Landing Zone best practices, at LG, all logs will be stored in the central Logging AWS account which c ontains a central Amazon S3 bucket for storing copies of all AWS CloudTrail and AWS Config log files in an audit log account.
+*	Design Decision
+CloudTrail will be enabled across all AWS account and logs will be stored in the central Logging AWS account.
+
+ 
+6.9	AWS MONITORING
+Amazon CloudWatch monitors all AWS resources and the applications in real time. within AWS. CloudWatch collects and track metrics, which can be measured for AWS resources and applications. CloudWatch can send notifications or automatically make changes to the resources based on pre-defined rules. Administrators can also set their own also can send their own logs and custom metrics to CloudWatch for monitoring.
+There are two types of CloudWatch monitoring
+•	Basic monitoring, which requires no additional fee, includes seven pre-selected metrics and three status-check metrics, produced at five-minute and one-minute intervals, respectively.
+•	Detailed monitoring, which comes at an additional charge, increases the frequency of all metrics to one-minute intervals.
+CloudWatch alarms can be created to trigger alerts based on threshold as set on Cloud Watch metrics which can also be used for autoscaling application workloads. The below diagram shows high-level Cloudwatch architecture
+ 
+Figure 12 - CloudWatch
+As per AWS Landing Zone best practices, at LG, all monitoring logs will be stored in the central Logging AWS account along with CloudTrail.
+Alerts and notifications will be configured to send emails to the relevant operations management teams. 
+*	Design Decision
+CloudWatch will be enabled across AWS accounts to monitor AWS resources and logs will be stored centrally in the Logging AWS account.
+The above design decision(s) were taken in accordance with the below requirements:
+RG22 - Security alerts and Platform alerts to be sent to central teams and to Application teams.
+
+*	Recommendation
+Use only distribution groups or shared mailboxes to send notifications and alarms.
+
+7.	AZURE HIGH-LEVEL DESIGN
+As part of the cloud enablement solution, Liberty Global has requirements for an Azure public cloud platform to be designed with security, agility and expandability in mind. This also includes extending on-premises technologies to the cloud. As per requirements mentioned in section 5.2, below is a high level design of the landing zones in Azure.
+ 
+Figure 13 - Azure High Level Design
+*	Design Decision
+Create a master account associated with libertygobal.com
+Production and Non-Production will be created with separate subscriptions and network flow restricted by network security groups.
+The above design decision(s) were taken in accordance with the below requirements:
+Azure Landing Zones will be deployed in Frankfurt (Germany Central) and London (UK South). 
+RG14 - All AWS/Azure accounts should be linked to a libertyglobal.com account. 
+RG31 - All Cloud accounts should be linked to a Master account. 
+RG49 - Separate VPC for Production and Non-Production within a Region should be used for the base platform with separation through Security Groups. 
+
+7.1	SUBSCRIPTION MANAGEMENT
+The following diagram shows a high-level architecture of subscription model:
+ 
+Figure 14 - Azure Subscription Architecture
+
+An Azure subscription grants you access to Azure services. A subscription has two aspects: 
+•	The account through which resource usage is reported and services are billed (the subscription admin), 
+•	The subscription itself which governs access to and the use of the Azure services. The subscription admin manages services (for example O365, Azure Storage, VM's, etc.) through the Azure Management Portal. 
+Additionally, as per requirements of LG, the recommendation would be to sign up with an Enterprise Agreement with Azure as that allows LG to:
+•	Manage multiple subscriptions within a single EA
+•	Receive discounts on subscription fees
+•	Consolidated billing across the organization
+•	Optional premium features.  
+
+
+
+
+7.1.1	NUMBER OF SUBSCRIPTIONS
+Microsoft recommend keeping the number of Azure subscriptions as small as possible to prevent unwanted administrative overhead that comes with subscription sprawl. 
+Creating separate subscriptions as a method to establish billing boundaries is not recommended, as this should be achieved using resource groups and tagging in the current Azure Resource Manager (ARM) model. Proactively introducing multiple subscriptions based on the possibility of hitting resource limits is also not recommended Instead, it’s recommended to increase the number of subscriptions as a part of capacity planning when it’s clear that growth will exceed current maximum subscription limits.
+As per requirements of Liberty Global (section 5.2) there is a desire to have strong segregation between Production and Non-Production environments, a 2-subscription model is proposed.
+Tentative Subscription Name	Description
+Liberty Global - Prod	Production Subscription 
+Liberty Global - NonProd	Non-Production Subscription 
+Table 18 – Azure Subscriptions
+*	Design Decision
+LG will deploy 2 subscriptions, for Production and Non-Production workloads.
+•	This reduces the complexity associated with managing multiple subscriptions while still achieving a level of segregation between production and non-production environments, 
+*	Recommendation
+Keep Azure subscriptions to a minimum to avoid complexities
+7.1.1.1	SUBSCRIPTION LIMITATIONS
+Azure subscriptions have some scale limitations in terms of the number of specific resources of specific types that can be created per subscription (or per subscription per region). Below is a breakdown of some example resource limits that Liberty Global could encounter:
+Resource	Default Limit	Maximum Limit
+VMs per subscription	10,000 per Region	10,000 per Region
+VM total cores per subscription	20 per Region	Contact support
+VM per series (Dv2, F, etc.) cores per subscription	20 per Region	Contact support
+Co-administrators per subscription	Unlimited	Unlimited
+Storage accounts per region per subscription	200	200
+Resource Groups per subscription	980	980
+Availability Sets per subscription	2,000 per Region	2,000 per Region
+Resource Manager API request size	4,194,304 bytes	4,194,304 bytes
+Tags per subscription	unlimited	unlimited
+Unique tag calculations per subscription	10,000	10,000
+Cloud services per subscription	Not Applicable	Not Applicable
+Affinity groups per subscription	Not Applicable	Not Applicable
+Subscription level deployments per location	800	800
+Table 19 – Azure Subscription limitations
+More details on subscription limitations are described on this link. 
+!	Note
+This information is obtained from Microsoft and are soft limits and can be subject to change without notification.
+7.1.2	SUBSCRIPTION DIRECTORY
+Each Azure Subscription has a trust relationship with an Azure AD tenant instance which is used to authenticate users, services, and devices. Multiple Subscriptions can trust the same directory, but a Subscription trusts only one directory. All Subscription service administrator (and co-administrator) accounts reside within this Azure AD instance. Additionally, RBAC permissions are granted to a user or group from the associated Azure AD tenant.
+Multiple Microsoft cloud services such as Office 365 and Azure subscriptions can use the same Azure AD (AAD) within the same organization
+ 
+Figure 15 - - Azure AD Tenant Subscription Relationship
+*	Design Decision
+LG subscriptions will be associated with a single Azure AD directory bound to the EA.
+•	Associating subscriptions with a single Azure AD simplifies administration and management of Azure resources particularly when RBAC is used.
+
+!	Important Note
+At the time of deployment, if there is already an existing Azure AD tenant within LG, the Azure subscriptions will use the same Azure AD
+
+
+
+ 
+7.2	RESOURCE GROUPS
+Resource Groups are a critical concept in Azure Resource Management. A Resource Group is essentially:
+•	A logical grouping of resources
+•	A container for delegation of administration (current recommended best practice)
+•	A target for RBAC
+The following diagram represents a high-level overview of Azure workloads and azure objects in a single resource group.
+ 
+Figure 16 - High-Level overview of Resource group
+*	Design Decision
+Production and Non-Production have their own subscriptions are are restricted using Network Security Groups (NSG) within their own Resource Groups (RGs)
+The above design decision(s) were taken in accordance with the below requirements:
+RG49 – Separate VPC / Subscription for Production and Non-Production within a Region should be used for the base platform with separation through Security Groups. 
+
+7.2.1	RESOURCE GROUP STRATEGY
+Azure Resource Manager (ARM) introduced the concept of resource groups as a robust and flexible way to deploy and manage resources in Azure. Resource groups serve as containers for Azure resources within a subscription and are a flexible way to define resource lifecycles, policies, and access control. Resources can be allocated to resource groups using different deployment models such as production and non-production, depending on the requirments LG has proposed.
+The below diagram shows segragation of applications into resource groups across the management and NSA Levels. 
+
+The below table lists all the Resource Groups that will be created in Azure.
+Resource Group Name	Description
+RG-LON-SHAREDSERVICES	Shared Services Hosts in London
+RG-LON-PROD-LEVEL-2-3	Production Public Workloads  L2 / L3 in London
+RG-LON-PROD-LEVEL-4	Production Public Workloads  L4  in London
+RG-LON-PROD-LEVEL-5-6-DB	Production Public Workloads L5 / L6 Database in London
+RG-LON-NONPROD-LEVEL-2-3	Non-Production Public Workloads  L2 / L3 in London
+RG-LON-NONPROD-LEVEL-4	Non-Production Public Workloads  L4 in London
+RG-LON-NONPROD-LEVEL-5-6-DB	Non-Production Public Workloads L5 / L6 Database in London
+RG-FRANKFURT-SHAREDSERVICES	Shared Services Hosts in Frankfurt
+RG-FRANKFURT-PROD-LEVEL-2-3	Production Public Workloads  L2 / L3 in FrankFurt
+RG- FRANKFURT-PROD-LEVEL-4	Production Public Workloads  L4 in FrankFurt
+RG- FRANKFURT-PROD-LEVEL-5-6-DB	Production Public Workloads L5 / L6 Database in FrankFurt
+RG- FRANKFURT-NONPROD-LEVEL-2-3	Non-Production Public Workloads  L2 / L3 in FrankFurt
+RG- FRANKFURT-NONPROD-LEVEL-4	Non-Production Public Workloads  L4 in FrankFurt
+RG- FRANKFURT-NONPROD-LEVEL-5-6-DB	Non-Production Public Workloads L5 / L6 Database in FrankFurt
+Table 20 - Azure Resource Groups
+*	Design Decision
+Tenancy model in Azure was based on the NSA Levels split into resource groups, tenancies will be identified by tagging
+The above design decision(s) were taken in accordance with the below requirements:
+RG47 - Tenancy model needs to be as simplistic as possible, aligning to SDDC and the Network Security Assessment model.
+
+ 
+7.2.2	ASSET TAGGING
+Tags provide a way to logically organise resources with custom properties and can be applied to Resource Groups and/or directly to individual resources. Tags can be used to refine the selection criteria for resources or Resource Groups from the console, web portal, PowerShell, or the Azure resource API.
+Tags are particularly useful when you need to organise resources for billing or management. Tags can be applied to resource groups and to resources that support Azure Resource Manager (ARM) operations. 
+As this is a greenfield deployment, all resources deployed into Liberty Global Azure environment will be deployed using the ARM model and not the legacy model.
+Below explains the limitations of using Azure Tags:
+•	Each resource or resource group can have a maximum of 15 tags.
+•	The tag name is limited to 512 characters, and the tag value is limited to 256 characters. For storage accounts, the tag name is limited to 128 characters, and the tag value is limited to 256 characters.
+•	Virtual Machines are limited to a total of 2048 characters for all tag names and values.
+•	Tags can't be applied to classic resources such as Cloud Services.
+•	Tag names can't contain these characters: <, >, %, &, \, ?, /
+The following are tag naming convention recommendations and in-line with SDDC:
+Identities	Description	Possible Values
+CI	The unique identifier the ITSM uses for its service inventory that an operator can use to search the CMDB and find all the details about a given resource, including what services it belongs to.	TBD
+Country	Country where Virtual System is Deployed	United Kingdom
+Germany
+Site	Data Centre Location	London
+FrankFurt
+Billing Code	Reference to Cost Centre / Billing identity	Numerical / String
+Environment	Environment where virtual machine will be deployed	Production
+Pre-Production
+OPCO	Operating Company that will utilize service	Virgin Media
+Unity Media
+Function	Type of application that will be run on Server	App Server
+Web Server
+Solarwinds
+NSA Level	NSA Level of Server	Level 2
+Level 3
+Level 4
+Level 5
+Level 6
+Table 21 - Asset Tagging
+
+*	Design Decision
+The above design decision(s) were taken in accordance with the below requirements:
+RG09 - Resource tagging will align with account owners to provide granular billing show back. Billing code value has been set. 
+
+RG48 - Tagging policy should be used to create separation of services. Function of server has been included in the tagging. 
+7.3	BILLING
+Resource manager also allows for tagging resources. Tagging allows for grouping resources that might not otherwise be easily associated. These tags can be used for billing or to show resources that are part of the same department or part of any complex configuration that may otherwise be hard to view. 
+Additionally by tagging billing resources will allow viewing costs at a granular level for LG’s finance teams and its customers, this would satisfy requirements RG08, RG09 and RG10 respectively. Azure offers some deeper insights natively, extended by Cloudyn for gaining insights on individual resources. The premium features of Cloudyn need to be further licensed. Cloudyn also can connect with AWS which gives a global tool for cost management. 
+According to section 4.2.3 requirement RG33 states that there must be billing alerts configured to be sent to finance. Billling alerts can be configured to go out on monthly basis to the finance email addresses. 
+*	Design Decision
+At LG, Billing will be available per-device level which can be done using the Azure Cost Management Tool or alternatively via Cloudyn if LG would like to manage globally.
+The above design decision(s) were taken in accordance with the below requirements:
+RG08 - Detailed visibility of billings is required down to a per-device level 
+RG10 - Cloud consumers should be able to have visibility of their costs and billing. 
+RG33 - Billing alerts to be configured. Billing can be configurable on the financial section of the portal.
+
+
+
+ 
+7.4	NETWORK CONNECTIVITY
+This section discusses the network connectivity throughout the Azure public cloud and traffic routing with workloads across Azure regions (i.e. London to Frankfurt). 
+7.4.1	VNETS
+VNet is a logical isolation of the Azure network which allows secure connections to neighboring Azure resources. VNet creates a private network space in Azure for organisations. 
+A VNet peering connection between virtual networks enables routing traffic between two VNets privately through IPv4 addresses. Virtual machines in the peered VNets can communicate with each other. These virtual networks can be in the same region or in different regions and VNet peering connections can also be created across Azure subscriptions. 
+Global VNet Peering enables resources in the virtual network to communicate across Azure regions privately through the Microsoft backbone. VMs across virtual networks can communicate directly without the need for gateways. This in return allows a high-bandwidth, low-latency connection across peered virtual networks in different regions. 
+LG has opted to have two Azure landing zones (see section 5.2) therefore there global peering between London and Frankfurt. 
+The following diagram shows VNet Peering between subscriptions and VNets:
+
+
+The following diagram shows VNet Peering between Management VNet and Production:
+ 
+Figure 19 - Azure VNET Peering across regions
+The following table show the VNets that will be created in the Azure environment:
+VNet Name	Description
+London-SharedServices-VNet	Shared Services Network for London
+London-Production-VNet	Production Network in London
+London-Non-Production-VNet	Non-Production Network in London
+FrankFurt- SharedServices-VNet	Shared Services Network for Frankfurt
+FrankFurt-Production-VNet	Production Network in Frankfurt
+FrankFurt-Non-Production-VNet	Non-Production Network in Frankfurt
+Table 22 - Azure VNETs
+
+
+
+
+
+ 
+7.4.2	SUBNETS
+A vNET can be further segmented into multiple subnets. During the design a total of 4 subnets were identified for the Azure cloud network design:
+Subnets	Description	NSA Level	Subscription
+Public Subnet	Perimeter subnet for internet facing workloads	  L2 / 3	 Prod / Non-Prod
+Apps Subnet	For all Liberty Global application resources as specified within NSA Levels which are exposed to the network, a subnet for each subscription (production and non-production) was deemed appropriate given security is addressed by micro segmentation of application components.	Level 4	Prod / Non-Prod
+Database Subnet	For all Liberty Global application resources as specified within NSA Levels 5 / 6	 Level 5/6	 Prod / Non-Prod
+SharedServices Subnet	For shared services including the AD Domain Controllers, DNS, NTP.	Management	Prod / Non-Prod
+Table 23 –  Azure cloud subnet networks
+The following diagram gives a high-level overview of Azure Internet connectivity and On-premise connectivity.
+
+*	Design Decision
+The subnets will be designed as per the requirement of the NSA levels to segregate the different workloads
+The above design decision(s) were taken in accordance with the below requirements:
+RG54 - Minimum 3 distinct Subnets to separate Front End services, Applications and Databases to provide additional level of separation
+
+ 
+7.4.3	EXPRESS ROUTE
+ExpressRoute is an Azure service that lets you create private connections between Microsoft datacenters and infrastructure that's on your premises or in a colocation facility. 
+To ensure reliability, faster speeds, lower latencies, and higher security for connectivity with Azure, the recommendation is to use ExpressRoute connections as they do not go over the public Internet. ExpressRoute allows Liberty Global to connect their Private WAN into Azure to ensure consistent service levels concerning network latency, availability and security. 
+The following diagram is a very high-level design architecture of Azure ExpressRoute connection. 
+
+ 
+Figure 21 - ExpressRoute Connectivity
+Although ExpressRoute offers 3 types of plans:
+•	Unlimited data. Billing is based on a monthly fee; all inbound and outbound data transfer is included free of charge.
+•	Metered data. Billing is based on a monthly fee; all inbound data transfer is free of charge. Outbound data transfer is charged per GB of data transfer. Data transfer rates vary by region.
+•	ExpressRoute premium is an add-on to the ExpressRoute circuit. The ExpressRoute premium add-on provides the following capabilities:
+o	Increased route limits for Azure public and Azure private peering from 4,000 routes to 10,000 routes.
+o	Global connectivity for services. An ExpressRoute circuit created in any region will have access to resources across any other region in the world. 
+o	Increased number of VNet links per ExpressRoute circuit from 10 to a larger limit, 
+Each ExpressRoute circuit consists of two connections to two Microsoft Enterprise edge routers (MSEEs) from LG’s on-premise network edge. To ensure redundancy and meet Azure SLA requirements Microsoft requires dual BGP connection from LG on-premise network edge.
+Multiple VNETs can connect to a single ExpressRoute circuit thus allowing multiple subscriptions to share an ExpressRoute circuit. However there are certain requirements for this to happen:
+•	All VNETs connected to an ExpressRoute circuit must be in the same routing domain. 
+•	They must not have overlapping IP addresses.
+*	Design Decision
+At LG, ExpressRoute will be used as the primary method for connecting on-premises systems with Azure. A Standard Unlimited circuit of at least 1Gbps will be deployed.
+The above design decision(s) were taken in accordance with the below requirements:
+RG35 - Using AWS Direct Connect/Express route to establish private connectivity between cloud provider and data center.
+
+7.4.4	BACKUP VPN LINKS
+In addtiion to the ExpressRoute links, backup VPN links over the Internet will be setup for redundancy in the event that the ExpressRoute links become unavailable. 
+The below diagram shows the ExpressRoute connectivity between the production and non-production environments as well as the backup VPN links.
+
+ 
+Figure 22 - Backup VPN connectivity
+                 
+7.4.5	INTERNET CONNECTIVITY
+Within the Azure network traffic that is required to go directly out to the internet will be implemented with user defined routes (UDR). Thus, allowing the Level 2 VMs to communicate directly with the Internet, according to security policies.
+Private VMs may need outbound internet connectivity for use cases such as:
+•	Patching and installer repositories
+•	Access to APIs (e.g. Google Maps and reCAPTCHA)
+LG may implement a more secure design by implementing a proxy farm (e.g. WAFs) hosted in a Shared Services VNET effectively whitelist, log and monitor outbound internet traffic. 
+*	Recommendation
+Accenture recommend LG to implement a proxy service for VMs that require outbound Internet connectivity in the Shared Services VNET.
+
+7.4.6	AVAILABILITY ZONES
+Availability Zones is a high-availability offering that protects your applications and data from datacenter failures. Availability Zones are unique physical locations within an Azure region. 
+To achieve business continuity on Azure, the  application architecture can use a combination of Availability Zones with Azure region pairs. This allows  synchronous replication of applications and data using Availability Zones within an Azure regions for high-availability and asynchronously replicate across Azure regions for disaster recovery protection.
+The current regions that support Availability Zones are:
+•	Central US
+•	East US 2 (Preview)
+•	France Central
+•	North Europe
+•	Southeast Asia (Preview)
+•	West Europe
+•	West US 2
+UK South (London) and Germany Central (Frankfurt) do not support availability zones hence LG would need to take into account region pairing (discussed in next section) if they wish to proceed with disaster recovery option of the Azure regions. If this is not possible, LG may wish to consider supported locaitons as listed above.  
+!	Important Note
+Availability Zones are not available in UK South and UK West or in Germany Central and Germany Northeast.
+
+ 
+7.5	SECURITY
+Through the adoption of cloud services Liberty Global can take advantage of the significant investments Microsoft has made in their cloud platform and services. The image below illustrates the cloud shared responsibility model with the demarcation between the ‘cloud customer’ and ‘cloud provider’ dependent on the type of service being consumed.
+ 
+Figure 23 - Azure Security Responsibility Model
+The master account will be able to assign permissions to either subscriptions, however to ensure security integrity all admin actions will be logged and audited. At the same time this satisfies LG’s requirements RG15 and RG22. 
+Based on the Azure services in scope (see section 4.2.3) for Liberty Global the table below provides an overview of some of the Azure security services which are available to use at different application levels. These services will be leveraged when implementation of the environment. Additionally, some of core security service in use by LG will be Disk Encryption, Update Management, Application Gateway, TLS, SSL Certifications and IP Restrictions.
+Service	Security Services
+Web App	SSL Cert, Key Vault, Azure AD, TLS, IP Restrictions, Application Gateway (WAF)
+SQL DB	Azure AD Always Encrypted (Motion), Key Vault, TDE (Rest), DDM, RLS, ATP
+Virtual Machine	Disk Encryption, Anti Malware, Update Manager
+Table 24 –  Security objects for Azure services
+
+7.5.1	COMPLIANCE
+Azure provides comprehensive compliance coverage, enabling Liberty Global to meet a wide range of regulatory obligations. Azure is compliant with below certifications:
+•	ISO27001 Azure is compliant with ISO27001:2015 and certification is available from this link.
+•	PCI-DSS Azure is compliant with version 3.2 and Attestations of Compliance can be found on this link.
+•	NIST Cybersecurity Framework a US policy framework for security guidance.
+•	GDPR Azure has a compliance where GDPR settings can be configured accordingly. This is explained here
+More information on PCI-DSS compliance can be found here
+The diagram below is an architectural framework that is designed to help companies like Liberty Global deploy end-to-end secure applications in Microsoft Azure.
+ 
+Figure 24 - Azure Compliance objects
+*	Design Decision
+Security based on Azure services was a design decision made in accordance with the following requirements:
+LG requires their workloads to be compliant with PCI-DSS, ISO27001 and GDPR. 
+7.5.2	NETWORK SECURITY GROUPS
+Network Security Groups provides segmentation within a Virtual Network (VNet) as well as full control over traffic that ingresses or egresses a virtual machine in a VNet. It also helps achieve scenarios such as DMZs (demilitarized zones) to allow users to tightly secure backend services such as databases and application servers.
+Azure resource such as VMs and subnets can only have a single NSG assigned to it, but a single NSG can be assigned to multiple VMs/NICs and subnets. The new Application Security Groups (ASG) feature will be used in conjunction with Network Security Groups to achieve the desired levels of environment isolation and micro segmentation.
+Following are recommendations when designing NSGs:
+•	All VMs deployed to Azure will require an NSG assigned to their NIC.
+•	Block all traffic into and out of the subnet using a low priority rule at the bottom of the range to prevent VMs that are not assigned to an ASG from communication.
+•	Keep it simple – troubleshooting traffic flows with many NSGs is more difficult than troubleshooting with a small number of NSGs.
+•	Never assign NSGs to individual NICs. Only assign them to Subnets. If additional granularity is required, leverage ASGs for the VM(s) that require it and add rules to the Subnet NSGs for the newly created ASG.
+•	Control internal VNet traffic on the receiving side (inbound rules).
+The following diagram displays the NSG Rules being defined within the vNET. 
+NSG Rules are enforced based on their Priority. Priority values start from 100 and go to 4096. Rules will be read and enforced starting with 100 then 101, 102 etc., until all rules have been evaluated in this order. Rules with the priority “closest” to 100 will be enforced. The following table discusses the useage of the priority rules for each range.  
+Priority Range	Use
+•	0 – 999	•	Reserved for possible future use for rules that need to take precedence over Application Security Groups
+•	1000 – 1999	•	Rules that apply to Application Security Groups
+•	2000 – 2999	•	Rules for the entire subnet
+•	3000 – 3999	•	Rules for all address ranges (*) that specify a port or port range
+•	4000 – 4096	•	Custom default rules (* address ranges, * ports)
+Table 25 –  Priority Rules for NSG’s
+Network Security Groups (NSGs) should be used to restrict traffic between subnets that do not need to talk to one another, based on the IP ranges assigned to each subnet. Each subnet should be able to communicate with the core infrastructure subnet for infrastructure services (AD, DNS, Monitoring, etc.).
+At LG, NSGs will be used as primary method of segregatting traffic between different subnets. The detailed configuration of the NSGs will be documented in the low-level design.
+*	Design Decision
+NSG rules will be implemeted to create separation of services.
+Security based on Azure services was a design decision made in accordance with the following requirements:
+RG39 - Separation of services within VPC needs to be maintained, can be done using ACL basis. 
+7.5.3	APPLICATION SECURITY GROUPS
+Application Security Groups (ASGs) allows for configuring network security using an application-centric approach within Network Security Groups (NSGs). This approach allows for the grouping of Virtual Machines logicaly, irrespective of their IP address or subnet assignment within a vNET hence creating workload isolated environments.
+They work by assigning the network interfaces of virtual machines, as members of the ASG. ASGs are then used within NSGs as either a source or destination of a rule, and this provides additional options and flexibility for controlling network flows of resources within a subnet.
+More details on ASGs will be documented in the low-level design.
+7.5.4	SECURITY OPERATIONS
+Azure Security Center is a policy and analytics solution integrated with Azure to protect workloads and provide rich visual reporting on the security health of the environment. Security Centre primarily supports IaaS workloads currently however there is some identity integration and protection for web end points including Web Apps and SQL databases. 
+Logging will be enabled across all Azure services and analysed by many tools including Security Center and OMS. Logs can also be exported to third party tools, Security Centre supports SIEM integration for example. Logging and monitoring in Azure will be discussed further in section 7.8 of this document.
+7.5.5	ENCRYPTION
+Encryption at Rest is a common security requirement. In Azure encryption with data at rest can occur without the risk or cost of a custom key management solution. The storage location of the encryption keys and access control to those keys is central to an encryption at rest model as the keys need to be highly secured but manageable by specified users and available to specific services. or Azure services. Azure Key Vault is the recommended key storage solution and provides a common management experience across services. As per requirements of LG, majority of the encryption at rest will be applied to Layer 6 of the NSA Level due to the large storage of data. 
+As LG will be running Infrastructure as a Service (IaaS) they can have a variety of services and applications in use. IaaS services can enable encryption at rest in their Azure hosted virtual machines and VHDs using Azure Disk Encryption. During compute and while in use, on a server loading the data in memory, data can be persisted locally in various ways including the Windows page file, a crash dump, and any logging the application may perform. To ensure this data is encrypted at rest, IaaS applications can use Azure Disk Encryption on an Azure IaaS virtual machine (Windows or Linux) and virtual disk.
+Additionally, Azure implements very strict physical security to the datacentre and fabric level data encryption will be utilized on the data on servers to ensure that data remains secure at all times.
+*	Design Decision
+Encryption at rest will be applied to storage levels across NSA level 6 workloads as per policy.
+The above design decision(s) were taken in accordance with the below requirements:
+RG23 - Data encryption at rest for workloads deemed as Layer 6 in the Network Security Agreement. 
+RG26 - Align with LG Security encryption policy.
+
+7.5.6	PENETRATION TESTING
+As per Liberty Global’s requirement, specifically RG46 (see section 4.2.3) Microsoft carry out their own penetration testing and audits against the Microsoft datacentres and Azure. The findings reports can be made available on request. Additionally, for LG wishing to carry out their own penetration testing there is a process to follow and a request form. Liberty Global can only carry out testing against their own services and must provide information on the time and duration of the tests in addition to the types of tests which will be carried out, tooling used and target IP addresses. 
+!	Important Note
+Penetration Testing can only be be performed on certain Azure services and with explicit permission from Azure
+
+7.5.7	DDOS PROTECTION
+Azure offers two types of Distributed denial of service (DDoS) protection. As part of best practices DDoS can be combined with applications. The following two types of services are offered:
+Feature	Basic DDoS	Standard DDoS
+Active Traffic Monitoring & Always on detection	Yes	Yes
+Automatic Attack Mitigations	Yes	Yes
+Availability Guarantee	Azure Region	Application
+Mitigation Policies	Tuned for Azure region traffic volume	Tuned for application traffic volume
+Metrics & Alerts	Metrics and Alerts	Real-time attack metrics & diagnostic logs via Azure Monitor.
+Mitigation Reports	No	Post attack mitigation reports
+Mitigation Flow Logs	No	NRT Log Stream for SIEM integration
+Mitigation Policy customization	No	Engage DDoS Experts
+Support	Best effort	DDoS experts available during attack
+SLA	Azure Region	Application SLA Guarantee and cost protection
+Pricing	Free	Monthly and Usage based
+Table 26 - Azure DDoS Service Comparision
+LG may wish to simulate their environment with DDoS attack and this would allow LG to:
+•	Validate how Microsoft Azure DDoS Protection Standard protects your Azure resources from DDoS attacks
+•	Optimize your incident response process while under DDoS attack
+•	Document DDoS compliance
+•	Train the network security teams
+In a nutshell, DDoS Protection Standard protects resources in a virtual network including public IP addresses associated with virtual machines, load balancers, and application gateways especially targeting resources in NSA Levels 2 and 3. When coupled with the Application Gateway web application firewall, DDoS Protection Standard can provide full layer 3 to layer 7 mitigation capability.
+*	Recommendation
+Accenture recommend to implement Azure DdoS protections for internet facing applications and workloads.
+
+ 
+7.6	COMPUTE, STORAGE AND BACKUP
+At LG, the Azure platform will be used as an IaaS platform initially. As part of the deliverable MD022 – Public Cloud Solution Blueprint, the high-level compute requirements and catalogue of instance types that will be made available were defined agreed.  The following section summarises the compute, storage and backup design for Azure. 
+The below diagram gives a high level overview of compute, storage in a resource group.
+
+7.6.1	COMPUTE
+There are dozens of unique VM instance types and selecting the correct size for an application is an important component and effective use of Azure IaaS services. As part of the Solution Blueprint, it was agreed that to standardise the compute workloads within AWS and Azure, instance size categories will be used to define the different types of compute instances that will be initially available as part of the service catalogue within the public cloud. 
+Therefore, to simplify and standardize, the below workload categories will be available:
+Category	Example Use Cases
+General Purpose	Generic applications, web servers, Dev/Test environments, Microservices, jump servers, core services
+Memory Optimised 	High-performance database servers, applications performing real-time big data.
+Table 27 –  Compute type and their use cases
+These VM sizes in Azure can be broken down into the following specifications, based on their intended use cases:
+General Purpose – This includes D-Series VMs (v2 through v3). These are the VMs that should make up the majority of LG IaaS presence as they offer a good price to performance balance. The B-series which are “Burstable” VMs with variable levels of Azure consumption based on load.
+Azure VM Name	CPU Cores	Memory (GiB)	Storage Tier Recommendation
+Standard_B2S	2	4	Standard HDD
+Standard_D2_v2	2	7	Standard SSD
+Standard_D4_v3	4	16	Standard SSD
+Standard_D8_v3	8 	32	Standard SSD
+Standard_D16s_v3	16	64	Premium SSD
+Table 28 –  General compute specifications
+Memory Optimized – These are E-Series VMs. The following table shows the VM sizes that have a high memory to CPU ratio. They are excellent for relational DB servers, caches, and in-memory analytics. 
+Azure EC2 Mapping	CPU Cores	Memory (GiB)	Storage Tier Recommendation
+Standard_GS1	2	28	Standard SSD
+Standard_GS2	4	56	Premium SSD
+Standard_GS3	8 	112	Premium SSD
+Standard_GS4	16	224	Premium SSD
+Table 29 –  Memory optimised compute specifications
+The VM is created with a temporary disk and is present on all VMs in Azure This disk is stored on a physical drive on the host machine. It is not saved in Azure Storage and may be deleted during reboots and other VM lifecycle events. This disk is primarily utilized to host the Page File (or the ‘swap’ extended memory file in Linux).
+The below list are some of the recommendations when deploying VMs: 
+•	Only store temporary data on the Temp Drive. There is no guarantee of data persistence for that drive. This drive should only be used for data that requires high performance but has no persistence requirement 
+•	VMs should never be provisioned with external IP addresses, except for VMs specifically designated as external facing appliances in the Perimeter subnet. This can be enforced through Resource Group Policies.
+•	Dev/test environments or other environments that do not need to be running 24/7 can be powered down either manually or through Azure Automation workflows to reduce cost.
+7.6.1.1	RESERVED VM INSTANCES
+As per Liberty Global’s requirements (see section 5.2.3), Liberty Global would like to have an improved budgeting and forecasting with a single upfront payment to ensure LG are within their CAPEX limits. By leveraging reserved VM instances, costs are reduced significantly up to 72%. Azure Reserved Instances require making upfront commitments on compute capacity, however, they can easily be exchanged or cancel reserved instances at any time should they not be needed. 
+To ensure reserved instances are used, Autoscaling will not be available due to policies applied. 
+*	Design Decision
+Reserved Instances will be utilised for most compute workloads
+The above design decision(s) were taken in accordance with the below requirements:
+RG44 - Reserved Instance will be used for all Compute.
+RG38 - Autoscaling needs to be unavailable to begin with as instances will be locked to Reserved Instances
+RG30 - Reserved instances should be available.
+
+
+7.6.2	STORAGE
+Azure Storage is the underlying storage for most of the services in Azure. Implementing the correct storage solution is one of the most important aspects of setting workloads in Azure. 
+An Azure Storage account gives access to all the Azure Blob, Queue, Table and File services in Azure Storage. Storage accounts provide a unique namespace for Azure Storage objects. Storage objects are PaaS services as it relies on Azure fabric to provide the storage. 
+Azure provides the following storage options and below are the recommendations on where to use each type of storage.
+Storage Type	Definition	Categories/Tiers	Recommendations
+Azure Virtual Disks	Highly available and reliable block level storage volumes for use with virtual machines as VHD stored in the blobs	1)	Standard HDD
+2)	Standard SSD
+3)	Premium SSD	•	Virtual disks on all instances that require storage volumes attached to the instance as primary storage for files and databases 
+•	Use Standard SSD for most common workloads
+•	Use Premium SSD for database workloads and applications that require sustained IOPS
+•	Use Standard HDD volumes for streaming workloads, data warehouses, log processing
+Azure File Storage	Managed file shares that use the standard SMB 3.0 protocol and accessed from anywhere on the network.	N/A	•	Use Azure File Storage where shared file storage is required and needs to be accessed from multiple virtual machines.
+
+Azure Blob Storage	Blob Storage is storing massive amounts of unstructured data that can be accessed from anywhere on the network	1)	Hot
+2)	Cool
+3)	Archive	•	Use Hot tier for most applications & websites and object storage that require data to be stored and retrieved frequently
+•	Use Cool tier for all storing backups snapshots, etc.
+•	Use Archive tier for long-term archives
+
+Table 30 - Azure Storage
+7.6.3	OPERATING SYSTEMS
+As part the Solution Blueprint catalogue, the following operating system blueprints will be available in Azure.
+Operating System and Stack Applications	Version	AWS	Azure
+Red Hat Enterprise Linux	7.5	✔	✔
+Oracle Linux	7.5	✔	✔
+Windows Server 2012 R2	Standard	✔	✔
+Windows Server 2012 R2 with SQL Server 2016 Standard	Standard	✔	✔
+Windows Server 2016	Standard	✔	✔
+Windows Server 2016 with SQL Server 2016 Standard	Standard	✔	✔
+CentOS	7.5	✔	✔
+Ubuntu	18.10	✔	✔
+Table 31 - OS Blueprints
+The above images will be available as Managed images in Azure which will be managed and updated by LG and will be customized as per LG security standards. 
+All instances deployed will be managed as per current LG operations procedure. These include
+•	Central AV and patch management on all instances
+•	Windows instances will be part of the domain and managed within the AD
+•	Windows Instances can have SCOM agent for monitoring at OS level
+
+7.6.4	BACKUP
+Azure provides “Azure Backup” service which currently supports backup of the following services to a Recovery Services Vault:
+•	Virtual Machines (Azure, Hyper-V, VMware, Bare metal)
+•	SQL Server
+•	Azure File Shares
+•	Exchange
+•	SharePoint 
+As per Liberty Global’s workloads, Azure backup cannot backup Oracle workloads, although this may change in the future but as of yet it is not supported.
+An instance of Backup and Site Recovery is referred to as a Recovery Services Vault (RSV). Recovery Services Vaults are available in all the landing zones Liberty Global is targeting for deployment. 
+Azure Backup doesn’t differentiate between Incremental and full backups in the same way that traditional backup solutions do. The first backup performed on a resource is a “full” backup while all subsequent backups are then “incremental”. More information can be found here: https://azure.microsoft.com/en-us/blog/microsoft-azure-backup-save-on-long-term-storage/ 
+Azure Backup allows configuration of daily, weekly, monthly, and yearly retention policies. Support is provided for up to 9,999 recovery points in theory over 100s of years but certainly sufficient to meet the needs of Liberty Global.
+The below table shows the current LG backup requirements along with their RPO/RTO as well as their retention periods. The current requirements are based on a service tier that each application/workloads will belong to accordingly backed up.
+Service Tier	Retentions	RPO	RTO
+Basic	8 days	24 hours	24 hours
+Standard	14 days	24 hours	12 hours
+Advanced	35 days	24 hours	6 hours
+Premium	95 days	24 hours	4 hours
+Table 32 - Backup Requirements
+As part of the the LLD, snapshot backup policies will be documented to backup the virtual machines based on the above schedule. Dev and test workloads in Non-PROD account by default will not be backed up.
+*	Design Decision
+Azure VM backup schedule will be used to backup production VM instances and the attached storage volumes
+
+ 
+7.7	IDENTITY
+Azure Active Directory (Azure AD) is Microsoft’s multi-tenant, cloud-based directory and Identity and Access Management service. Azure AD helps to secure access to on-premises web applications and cloud technologies. Azure AD is available in three configurations, each providing a different identity focus, and all three possible to run in tandem. The three configurations are:
+•	Azure Active Directory Basic
+•	Azure Active Directory Premium P1
+•	Azure Active Directory Premium P2
+Further detail on the configurations can be found here: https://docs.microsoft.com/en-us/azure/active-directory/active-directory-whatis 
+By integrating the on-premise AD with Azure AD by using Azure AD Connect to synchronize on-premises directory with cloud directory thus satisfying requirements RG34 as specified by LG in section 4.2.3. 
+LG currently has in place an Active Directory domain with an Azure AD Tenant as a part of the organisation’s simultaneous Office 365 rollout to allow enterprise IDs to be synced up into Azure. At the same time to ensure productivity is not affected enabling Single Sign On (SSO) would be recommended as a best practice. For SSO to be enabled, ADFS as a pre-requisite. LG currently has an ADFS in place from a previous project and may wish to leverage this for Single Sign On (SSO). 
+To balance security and productivity,  LG need to ensure that the resource being accessed is safe before an access control decision is made. This is possible with Azure AD conditional access, requirement . With conditional access, automated access control decisions are defined by the response ("do this") to the reason for triggering a policy ("when this happens").
+To grant or block the following initial selection is mandatory:
+•	Require multi-factor authentication
+•	Require device to be marked as compliant
+•	Require domain joined (Hybrid Azure AD)
+•	Require approved client app
+To further secure access to Azure cloud multi-factor authentication (MFA) is available at both premium levels and is recommended for all administrative access at a minimum. When combined with conditional access, an extra layer of security is added.
+*	Design Decisions
+•	Azure Active Directory will be used to manage identities.
+•	Azure premium P2 will enable extra layer to manage privilige accounts. 
+•	Azure AD Premium P1 will allow enablement of multi-factor authentication.
+•	The master account will be “@libertyglobal.onmicrosoft.com”
+•	AAD connect will connect with existing AD and sync with Azure AD.
+
+The above design decision(s) were taken in accordance with the below requirements:
+RG13 - Provide & manage identity in a single place. 
+RG16 - Multi Factor Authentication to be mandatory for all privileged account access. 
+RG17 - Multi Factor Authentication is mandatory for Azure portal logons/deployments. 
+RG18 - All root credentials should be secured. Initial “@libertyglobal.onmicrosoft.com account will not be used for administrative purposes. 
+RG31 - All Cloud accounts should be linked to a Master account. 
+RG32 - Use existing UIM solution for Access Key Management, if not possible, use AD. 
+RG34 - Existing AD will be integrated with IAM (AWS and Azure AD). 
+
+*	Recommendation
+Turn on Azure AD Privileged Identity Management for notification to priviledge access role changes.
+
+!	Note
+Before enabling Single Sign On (SSO), ADFS would be a prequisite. 
+
+7.7.1	ROLE BASED ACCES CONTROL (RBAC)
+Microsoft Azure Supports Role Based Access Control (RBAC) access to the Azure management portal. All users that require access will have a user account defined in the relevant environment’s Azure Active Directory and be given access rights to the environment based on the level of access they require. 
+LG will leverage RBAC roles which wll limit access to systems and other resources in the cloud based on the roles or job functions which can then be assigned to individual users within LG. For example, the networks team only have access to the network resources or Network Security Groups (NSG).
+RBAC is natively a part of Azure's management platform and will be used to control access to resource groups. There are 3 core roles (Owner, Contributor, Reader) that can be applied to Resource Groups and users can be placed into one of those roles or custom roles can be created.
+Azure also allows role-based access control (RBAC) for more fine-grained access in Azure Resource Manager deployments. RBAC can be applied at the subscription level to be inherited by resource groups, or to individual resource groups for more granular delegation.
+For security reasons, its not suitable to use the master admin account which has unrestricted access. 
+If Azure’s built-in roles don’t meet LG's specific delegation needs, custom RBAC roles will be created. Custom roles are stored in the Azure AD directory and can therefore be shared across all subscriptions within an Enterprise Agreement
+Custom RBAC roles will be covered in depth in the Low Level Design (LLD).
+*	Design Decision
+RBAC will be used to manage access to Azure resource. Accounts and teams will be given access according to their job functions.
+
+
+ 
+7.8	AZURE MONITORING AND LOGGING
+Azure Monitor is an inbuilt service in Azure. Azure monitoring allows collection of granular performance and utilisation data, activity and diagnostics logs, and notifications from your Azure resources in a consistent manner. 
+LG can use the Azure portal to view and analyse the monitoring data and set up automated actions based on alerts. In addition, Azure Monitor integrates with other analytics and monitoring tools such as OMS Insight & Analytics, Application Insights.
+As of yet, Azure monitoring service is not available in UK South but is available in Germany Central, if LG wishes to take advantage of using Azure monitoring in Frankfurt. 
+Logging is equally important for monitoring and diagnostics. Azure provides diagnostic logging for each VM and this is crucial for managing and troubleshooting the VM. Logging to a storage account makes it easier to collect and analyse the data. Some of the logs
+In line with the SDDC, an SIEM tool such as Splunk for example, can integrate with Azure Security Centre thus, allowing a quick view of what needs your attention from one management place and take action accordingly. 
+!	Important Note
+Azure monitoring service is not available in UK South.
+
+*	Design Decision
+Alerts will be configured in the Security Center and notifications can be configured.
+The above design decision(s) were taken in accordance with the below requirements:
+RG15 - All admin account actions should be logged and audited. Admin accounts actions will be logged and recorded. Event can be configured to be emailed.
+
+RG22- Security alerts and Platform alerts to be sent to central teams and to Application teams. 
+
+
+*	Recommendation
+Accenture recommend extending the SIEM tool such as Splunk to Public Cloud at a later stage which can integrate with both Azure and AWS as well as the SDDC to provide consistent monitoring service.
+
+ 
+8.	FOUNDATION SERVICES                                                                                                                                                                    
+As part of Public Cloud enablment and extending on-premises environment into the cloud, foundation services such as AD, DNS, CA, etc. will need to be deployed in the AWS and Azure. 
+Foundation services will be required to facilitate the deployment of workloads in the public cloud platforms. The core foundation services required are:
+Service	Description	Relevancy to Public Cloud
+DNS	Allow IP addresses to be mapped to domain names.	Core functionality of mapping of name to IP addresses. Acts as a validation methodology to ensure unique names are in use on the network.
+Active Directory	Authentication purpose for VMware	Active Directory server authentication to authenticate users to worloads. Also for workloads to be added to the LG AD.
+NTP	Time Sync Service across the Datacenter	All deployed components are configured to utilize these NTP servers. Having all components within the design using the same NTP server is critical for certificates and Active Directory authentication to function correctly.
+Certificate Authority (CA)	Certificate Authority for AWS and Azure	A security best practice to replace user-facing certificates with certificates that are signed by a well-known third-party or enterprise certificate authority (CA).
+SMTP	E-Mail Relay for alerts	SMTP Server will be used as the mail relay for notification purposes and alerts, this will also be a part of the foundation services to send email using SMTP. All Logging and monitoring alerts are sent as email over SMTP.
+LINUX Jump Servers	Jump servers to connect to Linux workloads	Jump servers (e.g - Bastion) will be deployed in Shared Services to allow securely connecting to Linux workloads.
+Windows Jump Servers	Jump servers to connect to Windows Server workloads	Jump servers with RDS will be deployed in Shared Services to allow securely connecting to Windows servers.
+Table 33 -Foundation Service Requirements
+Only the above foundation services will be deployed as part of the Proxima project. As these are existing services,  LG will need to provide the designs for the foundation services which will detail how these services can be extended to public cloud.
+*	Assumption
+LG will provide the designs for the core foundation services to be implemented on AWS and Azure.
+
